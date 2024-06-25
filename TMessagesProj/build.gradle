@@ -27,6 +27,23 @@ dependencies {
     implementation 'androidx.interpolator:interpolator:1.0.0'
     implementation 'androidx.biometric:biometric:1.1.0'
 
+    implementation 'androidx.compose.material3:material3:1.2.1'
+    implementation 'androidx.compose.material:material:1.6.8'
+    implementation 'androidx.compose.foundation:foundation:1.6.8'
+    implementation 'androidx.compose.ui:ui:1.6.8'
+    implementation 'androidx.compose.ui:ui-tooling-preview:1.6.8'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.6.8'
+
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.6.8'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.6.8'
+
+    implementation 'androidx.compose.material:material-icons-core:1.6.8'
+    implementation 'androidx.compose.material:material-icons-extended:1.6.8'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.2.1'
+    implementation 'androidx.activity:activity-compose:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
+    // Optional - Integration with RxJava
+    implementation 'androidx.compose.runtime:runtime-rxjava2'
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
@@ -65,7 +82,7 @@ dependencies {
 
 def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     buildToolsVersion '33.0.0'
     ndkVersion "21.4.7075529"
 
@@ -77,14 +94,14 @@ android {
         }
     }
 
+    buildFeatures {
+        compose true
+    }
+
     lintOptions {
         disable 'MissingTranslation'
         disable 'ExtraTranslation'
         disable 'BlockedPrivateApi'
-    }
-
-    dexOptions {
-        jumboMode = true
     }
 
     compileOptions {
@@ -97,8 +114,8 @@ android {
     defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 33
+        minSdkVersion 21
+        targetSdkVersion 34
         versionName "8.9.0"
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
@@ -108,7 +125,7 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16', "-j=16"
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16'
             }
         }
     }

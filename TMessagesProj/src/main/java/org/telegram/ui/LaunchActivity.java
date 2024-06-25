@@ -694,9 +694,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     final View view = viewHolder.itemView;
                     sideMenu.cancelClickRunnables(false);
                     view.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        ObjectAnimator.ofFloat(view, "elevation", AndroidUtilities.dp(1)).setDuration(150).start();
-                    }
+                    ObjectAnimator.ofFloat(view, "elevation", AndroidUtilities.dp(1)).setDuration(150).start();
                 }
             }
 
@@ -711,16 +709,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     selectedViewHolder = null;
                     view.setTranslationX(0f);
                     view.setTranslationY(0f);
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        final ObjectAnimator animator = ObjectAnimator.ofFloat(view, "elevation", 0f);
-                        animator.addListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                view.setBackground(null);
-                            }
-                        });
-                        animator.setDuration(150).start();
-                    }
+                    final ObjectAnimator animator = ObjectAnimator.ofFloat(view, "elevation", 0f);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            view.setBackground(null);
+                        }
+                    });
+                    animator.setDuration(150).start();
                 }
             }
 
@@ -730,9 +726,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 if (drawerLayoutAdapter.isAccountsShown()) {
                     RecyclerView.ViewHolder topViewHolder = recyclerView.findViewHolderForAdapterPosition(drawerLayoutAdapter.getFirstAccountPosition() - 1);
                     RecyclerView.ViewHolder bottomViewHolder = recyclerView.findViewHolderForAdapterPosition(drawerLayoutAdapter.getLastAccountPosition() + 1);
-                    if (topViewHolder != null && topViewHolder.itemView != null && topViewHolder.itemView.getBottom() == view.getTop() && dY < 0f) {
+                    if (topViewHolder != null && topViewHolder.itemView.getBottom() == view.getTop() && dY < 0f) {
                         dY = 0f;
-                    } else if (bottomViewHolder != null && bottomViewHolder.itemView != null && bottomViewHolder.itemView.getTop() == view.getBottom() && dY > 0f) {
+                    } else if (bottomViewHolder != null && bottomViewHolder.itemView.getTop() == view.getBottom() && dY > 0f) {
                         dY = 0f;
                     }
                 }
@@ -1158,14 +1154,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             }
         }
         FloatingDebugController.setActive(this, SharedConfig.isFloatingDebugActive, false);
-    }
-
-    public void addOnUserLeaveHintListener(Runnable callback) {
-        onUserLeaveHintListeners.add(callback);
-    }
-
-    public void removeOnUserLeaveHintListener(Runnable callback) {
-        onUserLeaveHintListeners.remove(callback);
     }
 
     private BaseFragment getClientNotActivatedFragment() {
@@ -2213,7 +2201,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                                     message = "";
                                                 }
                                                 if (data.getQueryParameter("text") != null) {
-                                                    if (message.length() > 0) {
+                                                    if (!message.isEmpty()) {
                                                         hasUrl = true;
                                                         message += "\n";
                                                     }
@@ -2492,11 +2480,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             if (mode != null) {
                                                 mode = mode.toLowerCase();
                                                 String[] modes = mode.split(" ");
-                                                if (modes != null && modes.length > 0) {
-                                                    for (int a = 0; a < modes.length; a++) {
-                                                        if ("blur".equals(modes[a])) {
+                                                if (modes != null) {
+                                                    for (String s : modes) {
+                                                        if ("blur".equals(s)) {
                                                             wallPaper.settings.blur = true;
-                                                        } else if ("motion".equals(modes[a])) {
+                                                        } else if ("motion".equals(s)) {
                                                             wallPaper.settings.motion = true;
                                                         }
                                                     }
@@ -2549,7 +2537,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             message = "";
                                         }
                                         if (data.getQueryParameter("text") != null) {
-                                            if (message.length() > 0) {
+                                            if (!message.isEmpty()) {
                                                 hasUrl = true;
                                                 message += "\n";
                                             }
@@ -2704,7 +2692,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
                                         // use getQueryParameters to keep the "+" sign
                                         List<String> phoneParams = data.getQueryParameters("phone");
-                                        if (phoneParams != null && phoneParams.size() > 0) {
+                                        if (phoneParams != null && !phoneParams.isEmpty()) {
                                             newContactPhone = phoneParams.get(0);
                                         }
                                         newContact = true;
@@ -3301,7 +3289,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     return true;
                 }
                 if (dids.size() <= 1) {
-                    return videoPath != null || photoPathsArray != null && photoPathsArray.size() > 0;
+                    return videoPath != null || photoPathsArray != null && !photoPathsArray.isEmpty();
                 }
                 return false;
             }
@@ -3309,7 +3297,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         fragment.setDelegate(this);
         boolean removeLast;
         if (AndroidUtilities.isTablet()) {
-            removeLast = layersActionBarLayout.getFragmentStack().size() > 0 && layersActionBarLayout.getFragmentStack().get(layersActionBarLayout.getFragmentStack().size() - 1) instanceof DialogsActivity;
+            removeLast = !layersActionBarLayout.getFragmentStack().isEmpty() && layersActionBarLayout.getFragmentStack().get(layersActionBarLayout.getFragmentStack().size() - 1) instanceof DialogsActivity;
         } else {
             removeLast = actionBarLayout.getFragmentStack().size() > 1 && actionBarLayout.getFragmentStack().get(actionBarLayout.getFragmentStack().size() - 1) instanceof DialogsActivity;
         }
@@ -3585,13 +3573,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 }
             }
         }, ConnectionsManager.RequestFlagFailOnServerErrors));
-        final Runnable cancelRunnableFinal = cancelRunnable;
-        progressDialog.setOnCancelListener(dialog -> {
-            ConnectionsManager.getInstance(intentAccount).cancelRequest(requestId[0], true);
-            if (cancelRunnableFinal != null) {
-                cancelRunnableFinal.run();
-            }
-        });
+        progressDialog.setOnCancelListener(dialog -> ConnectionsManager.getInstance(intentAccount).cancelRequest(requestId[0], true));
         try {
             progressDialog.showDelayed(300);
         } catch (Exception ignore) {
@@ -3902,15 +3884,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             BaseFragment baseFragment = getLastFragment();
                             if (storyItem == null) {
                                 BulletinFactory factory = BulletinFactory.global();
-                                if (factory != null) {
-                                    factory.createSimpleBulletin(R.raw.story_bomb2, LocaleController.getString("StoryNotFound", R.string.StoryNotFound)).show();
-                                }
+                                factory.createSimpleBulletin(R.raw.story_bomb2, LocaleController.getString("StoryNotFound", R.string.StoryNotFound)).show();
                                 return;
                             } else if (storyItem instanceof TL_stories.TL_storyItemDeleted) {
                                 BulletinFactory factory = BulletinFactory.global();
-                                if (factory != null) {
-                                    factory.createSimpleBulletin(R.raw.story_bomb1, LocaleController.getString("StoryNotFound", R.string.StoryNotFound)).show();
-                                }
+                                factory.createSimpleBulletin(R.raw.story_bomb1, LocaleController.getString("StoryNotFound", R.string.StoryNotFound)).show();
                                 return;
                             }
                             if (baseFragment != null) {
@@ -4556,7 +4534,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         } else if (emoji != null) {
             if (!mainFragmentsStack.isEmpty()) {
                 TLRPC.TL_inputStickerSetShortName stickerset = new TLRPC.TL_inputStickerSetShortName();
-                stickerset.short_name = sticker != null ? sticker : emoji;
+                stickerset.short_name = emoji;
                 ArrayList<TLRPC.InputStickerSet> sets = new ArrayList<>(1);
                 sets.add(stickerset);
                 BaseFragment fragment = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
@@ -7632,7 +7610,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             }
             if (fragment instanceof ChatActivity && !((ChatActivity) fragment).isInScheduleMode()) {
                 if (!tabletFullSize && layout == rightActionBarLayout || tabletFullSize && layout == actionBarLayout) {
-                    boolean result = !(tabletFullSize && layout == actionBarLayout && actionBarLayout.getFragmentStack().size() == 1);
+                    boolean result = !(tabletFullSize && actionBarLayout.getFragmentStack().size() == 1);
                     if (!layersActionBarLayout.getFragmentStack().isEmpty()) {
                         for (int a = 0; a < layersActionBarLayout.getFragmentStack().size() - 1; a++) {
                             layersActionBarLayout.removeFragmentFromStack(layersActionBarLayout.getFragmentStack().get(0));
@@ -7644,7 +7622,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         getActionBarLayout().presentFragment(params.setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(false));
                     }
                     return result;
-                } else if (!tabletFullSize && layout != rightActionBarLayout && rightActionBarLayout != null) {
+                } else if (!tabletFullSize && rightActionBarLayout != null) {
                     if (rightActionBarLayout.getView() != null) {
                         rightActionBarLayout.getView().setVisibility(View.VISIBLE);
                     }
@@ -7659,7 +7637,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         layersActionBarLayout.closeLastFragment(!forceWithoutAnimation);
                     }
                     return false;
-                } else if (tabletFullSize && layout != actionBarLayout) {
+                } else if (tabletFullSize) {
                     getActionBarLayout().presentFragment(params.setRemoveLast(actionBarLayout.getFragmentStack().size() > 1).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(false));
                     if (!layersActionBarLayout.getFragmentStack().isEmpty()) {
                         for (int a = 0; a < layersActionBarLayout.getFragmentStack().size() - 1; a++) {
